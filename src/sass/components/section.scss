@@ -9,6 +9,22 @@
 		background-color: $background-surface;
 	}
 
+	&--decor {
+		z-index: 1;
+		position: relative;
+
+		&::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			bottom: 0;
+			right: 0;
+			z-index: -1;
+			background-color: $background-surface;
+		}
+	}
+
 	&__decor {
 		position: absolute;
 		width: microbe-rem(280);
@@ -16,5 +32,6 @@
 		top: microbe-rem(-70);
 		left: 50%;
 		margin-left: microbe-rem(-140);
+		z-index: -2;
 	}
 }

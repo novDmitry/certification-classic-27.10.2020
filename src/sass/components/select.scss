@@ -6,6 +6,8 @@
 	width: 100%;
 	font-size: microbe-rem(14);
 	border-radius: 0.25em;
+	position: relative;
+	z-index: 1;
 
 	&:hover {
 		background-color: $background-hover;

@@ -4,9 +4,26 @@
 	background-color: $background-surface;
 	border: 1px solid $border-default;
 	border-radius: 8px;
+	display: flex;
+	justify-content: space-between;
+	flex-direction: column;
+	height: 100%;
+	position: relative;
+	z-index: 1;
 
 	&:hover {
-		box-shadow: 0 0 microbe-rem(60) black;
+		z-index: 0;
+
+		&::before {
+			position: absolute;
+			content: '';
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			box-shadow: 0 0 microbe-rem(100) black;
+			z-index: -1;
+		}
 	}
 
 	&__top {
