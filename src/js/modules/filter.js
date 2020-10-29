@@ -133,7 +133,7 @@ export const filter = ($element) => {
 				}
 			});
 
-			history.pushState({}, '', $.param(newStateArrow));
+			history.pushState({}, '', `?${$.param(newStateArrow)}`);
 		};
 
 		const filterData = (array, filterParam) => {
@@ -141,7 +141,6 @@ export const filter = ($element) => {
 
 			const sortData = (array, objectParam) => {
 				const { sort, page, perPage } = objectParam;
-				console.log(page);
 
 				return array
 					.sort((a, b) => {
