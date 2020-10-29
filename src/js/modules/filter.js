@@ -1,25 +1,74 @@
 import data from '../data/goods.json';
 
 export const filter = ($element) => {
+	const $cardContainer = $('[data-container]');
+	const $pagination = $('[data-pagination]');
+	const $paginationItems = $('[data-pagination]').find('[data-pagination-link]');
+	const $paginationInput = $('[data-pagination]').find('input');
+
+	$pagination.on('click', '[data-pagination-link]', function (e) {
+		e.preventDefault();
+		const $this = $(this);
+		const pageValue = $this.data('pagination-link');
+
+		switch (pageValue) {
+			case 'prev':
+				if (+$paginationInput.val() !== 1) {
+					$paginationInput.val(+$paginationInput.val() - 1).trigger('change');
+				}
+				break;
+			case 'next':
+				$paginationInput.val(+$paginationInput.val() + 1).trigger('change');
+				break;
+			case '5':
+				$paginationInput.val(5).trigger('change');
+				break;
+			default:
+				$paginationInput.val(+pageValue).trigger('change');
+				break;
+		}
+
+		$paginationItems
+			.attr('href', '#')
+			.filter((_, item) => {
+				return $(item).data('pagination-link') === +$paginationInput.val();
+			})
+			.removeAttr('href');
+	});
+
 	$element.on('change', function () {
 		const formArray = $($(this)[0].form).serializeArray();
-		const cardContainer = $($('[data-container]'));
+		const template = $($('[data-template]')[0].content.children);
+		let newElements = '';
 
-		formArray.push({ name: 'page', value: '1' });
+		const setFilterValue = (object, element, isset = false, int = false) => {
+			if (isset && element['value'] === '') {
+				if (element['name'] === 'price') {
+					element['value'] = 0;
+				} else {
+					return false;
+				}
+			}
 
-		const setObject = (object, element) => {
 			const elmValue =
-				element['name'] === 'price' ? +element['value'] : element['value'];
+				element['name'] === 'price' || int ? +element['value'] : element['value'];
 
-			if (!object[element['name']]) {
+			if (object[element['name']] === undefined) {
 				object[element['name']] = elmValue;
 			} else {
-				object[element['name']] =
-					typeof object[element['name']] !== 'object'
-						? [object[element['name']]]
-						: object[element['name']];
+				object[element['name']] = Array.isArray(object[element['name']])
+					? object[element['name']]
+					: [object[element['name']]];
 				object[element['name']].push(elmValue);
 			}
+		};
+
+		const setFilterObject = (object, array, isset, int) => {
+			array.forEach((element) => {
+				setFilterValue(object, element, isset, int);
+			});
+
+			return object;
 		};
 
 		const setStructure = (array) => {
@@ -28,7 +77,7 @@ export const filter = ($element) => {
 			let pagination = {};
 
 			array.forEach((element) => {
-				setObject(object, element);
+				setFilterValue(object, element);
 
 				params = {
 					brands:
@@ -59,7 +108,6 @@ export const filter = ($element) => {
 		};
 
 		const setUrl = (array) => {
-			const object = {};
 			const stateArrow = [
 				'page',
 				'year',
@@ -70,11 +118,8 @@ export const filter = ($element) => {
 				'sort',
 				'perPage'
 			];
+			const object = setFilterObject({}, array);
 			const newStateArrow = [];
-
-			array.forEach((element) => {
-				setObject(object, element);
-			});
 
 			stateArrow.forEach((element) => {
 				if (object[element] !== '' && object[element] !== undefined) {
@@ -91,29 +136,57 @@ export const filter = ($element) => {
 			history.pushState({}, '', $.param(newStateArrow));
 		};
 
-		const filterData = (array, param) => {
-			const object = {};
+		const filterData = (array, filterParam) => {
+			const objectParam = setFilterObject({}, filterParam, true, true);
 
-			param.forEach((element) => {
-				setObject(object, element);
-			});
-	
-			console.log(object);
+			const sortData = (array, objectParam) => {
+				const { sort, page, perPage } = objectParam;
+				console.log(page);
 
-			array.filter((item) => {
-				console.log(item)
-				// if () {
-					
-				// }
+				return array
+					.sort((a, b) => {
+						switch (sort) {
+							case 1:
+								return a.price.value > b.price.value ? 1 : -1;
+							case 2:
+								return a.price.value < b.price.value ? 1 : -1;
+							case 3:
+								return a.year < b.year ? -1 : 1;
+							case 4:
+								return a.year > b.year ? -1 : 1;
+						}
+					})
+					.slice((page - 1) * perPage, perPage * page);
+			};
+
+			return sortData(array, objectParam).filter((item) => {
+				let isFiltered = true;
+
+				for (const key in objectParam) {
+					const filterValue = objectParam[key];
+					const itemValue = item[key]?.id || item[key]?.value || item[key];
+
+					if (itemValue && filterValue) {
+						if (key === 'price') {
+							isFiltered =
+								isFiltered &&
+								filterValue[0] <= itemValue &&
+								filterValue[1] >= itemValue;
+						} else if (Array.isArray(filterValue)) {
+							isFiltered = isFiltered && filterValue.includes(itemValue);
+						} else {
+							isFiltered = isFiltered && itemValue === filterValue;
+						}
+					}
+				}
+
+				if (isFiltered) {
+					return item;
+				}
 			});
 		};
 
-		const template = $($('[data-template]')[0].content.children);
-		let newElements = '';
-
-		filterData(data, formArray);
-
-		data.forEach((element) => {
+		filterData(data, formArray).forEach((element) => {
 			let newTemplate = template.clone();
 
 			newTemplate.find('[data-year]').html(element.year);
@@ -131,9 +204,9 @@ export const filter = ($element) => {
 			newElements += newTemplate.html();
 		});
 
-		cardContainer.html(newElements);
+		$cardContainer.html(newElements);
 
-		// setUrl(formArray);
-		// setStructure(formArray);
+		setUrl(formArray);
+		setStructure(formArray);
 	});
 };

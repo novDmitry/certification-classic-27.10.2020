@@ -230,7 +230,7 @@
 												От дорогих к дешевым
 											</option>
 											<option value="3">От старых к новым</option>
-											<option value="3">От новых к старым</option>
+											<option value="4">От новых к старым</option>
 										</select>
 									</div>
 								</div>
@@ -246,10 +246,10 @@
 											form="filter"
 											data-filter
 										>
-											<option value="1">6</option>
-											<option value="2">12</option>
-											<option value="2">24</option>
-											<option value="2">60</option>
+											<option value="6">6</option>
+											<option value="12">12</option>
+											<option value="24">24</option>
+											<option value="60">60</option>
 										</select>
 									</div>
 								</div>
@@ -513,16 +513,63 @@
 									</div>
 								</div>
 							</div>
-							<div class="pagination">
-								<a href="#" class="pagination__link"><<</a>
-								<a href="#" class="pagination__link"><</a>
-								<a class="pagination__link">1</a>
-								<a href="#" class="pagination__link">2</a>
-								<a href="#" class="pagination__link">3</a>
-								<a href="#" class="pagination__link">4</a>
-								<a href="#" class="pagination__link">5</a>
-								<a href="#" class="pagination__link">>></a>
-								<a href="#" class="pagination__link">></a>
+							<div class="pagination" data-pagination>
+								<input
+									type="hidden"
+									name="page"
+									value="1"
+									data-filter
+									form="filter"
+								/>
+								<a
+									href="#"
+									class="pagination__link"
+									data-pagination-link="prev"
+									>&lt;</a
+								>
+								<a
+									href="#"
+									class="pagination__link"
+									data-pagination-link="1"
+									>&lt;&lt;</a
+								>
+								<a class="pagination__link" data-pagination-link="1">1</a>
+								<a
+									href="#"
+									class="pagination__link"
+									data-pagination-link="2"
+									>2</a
+								>
+								<a
+									href="#"
+									class="pagination__link"
+									data-pagination-link="3"
+									>3</a
+								>
+								<a
+									href="#"
+									class="pagination__link"
+									data-pagination-link="4"
+									>4</a
+								>
+								<a
+									href="#"
+									class="pagination__link"
+									data-pagination-link="5"
+									>5</a
+								>
+								<a
+									href="#"
+									class="pagination__link"
+									data-pagination-link="5"
+									>&gt;&gt;</a
+								>
+								<a
+									href="#"
+									class="pagination__link"
+									data-pagination-link="next"
+									>&gt;</a
+								>
 							</div>
 						</div>
 					</div>
